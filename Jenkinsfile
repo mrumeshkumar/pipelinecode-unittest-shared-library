@@ -10,11 +10,13 @@ pipeline {
     stages { 
         
         stage ('SonarScan'){
-           sh' mvn sonar:sonar \
-                -Dsonar.projectKey=mrumeshkumar_pipelinecode-unittest-shared-library \
-                -Dsonar.organization=mrumeshkumar-github \
-                -Dsonar.host.url=https://sonarcloud.io \
-                -Dsonar.login=bed657b793f86eec907ea8d6b9014e66d35f53f3'
+             steps {
+                sh' mvn sonar:sonar \
+                        -Dsonar.projectKey=mrumeshkumar_pipelinecode-unittest-shared-library \
+                        -Dsonar.organization=mrumeshkumar-github \
+                        -Dsonar.host.url=https://sonarcloud.io \
+                        -Dsonar.login=bed657b793f86eec907ea8d6b9014e66d35f53f3'
+             }
         }
         stage ('Initialize') {
             steps {
