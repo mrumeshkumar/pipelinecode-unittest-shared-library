@@ -43,12 +43,13 @@ pipeline {
             steps {
                 script {
                     
-                        def branchName = getCurrentBranch()
-                        def shortCommitHash = getShortCommitHash()
-                        def changeAuthorName = getChangeAuthorName()
-                        def changeAuthorEmail = getChangeAuthorEmail()
-                        def changeSet = getChangeSet()
-                        def changeLog = getChangeLog()
+                      // Notify to stakeholders
+                        def branchName = sh (script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
+                        def shortCommitHash = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+                        def changeAuthorName = sh(returnStdout: true, script: "git show -s --pretty=%an").trim()
+                        def changeAuthorEmail = sh(returnStdout: true, script: "git show -s --pretty=%ae").trim()
+                        def changeSet = sh(returnStdout: true, script: 'git diff-tree --no-commit-id --name-status -r HEAD').trim()
+                        def changeLog = sh(returnStdout: true, script: "git log --date=short --pretty=format:'%ad %aN <%ae> %n%n%x09* %s%d%n%b'").trim()
 
                         // Default values
                         def colorName = 'RED'
@@ -120,8 +121,8 @@ pipeline {
          stage('Docker Tag & Push') {
              steps {
                  script {
-                     branchName = getCurrentBranch()
-                     shortCommitHash = getShortCommitHash()
+                     branchName = sh (script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
+                     shortCommitHash = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
                      IMAGE_VERSION = "${BUILD_NUMBER}-" + branchName + "-" + shortCommitHash
                      sh 'eval $(aws ecr get-login --no-include-email --region us-east-1)'
                      sh "docker-compose build"
@@ -184,12 +185,12 @@ pipeline {
             echo "I AM ALWAYS first"
             script {
                buildStatus = ${currentBuild.currentResult}
-                def branchName = getCurrentBranch()
-                def shortCommitHash = getShortCommitHash()
-                def changeAuthorName = getChangeAuthorName()
-                def changeAuthorEmail = getChangeAuthorEmail()
-                def changeSet = getChangeSet()
-                def changeLog = getChangeLog()
+                def branchName = sh (script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
+                def shortCommitHash = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+                def changeAuthorName = sh(returnStdout: true, script: "git show -s --pretty=%an").trim()
+                def changeAuthorEmail = sh(returnStdout: true, script: "git show -s --pretty=%ae").trim()
+                def changeSet = sh(returnStdout: true, script: 'git diff-tree --no-commit-id --name-status -r HEAD').trim()
+                def changeLog = sh(returnStdout: true, script: "git log --date=short --pretty=format:'%ad %aN <%ae> %n%n%x09* %s%d%n%b'").trim()
 
                 // Default values
                 def colorName = 'RED'
@@ -245,34 +246,6 @@ def keepThisBuild() {
     currentBuild.setKeepLog(true)
     currentBuild.setDescription("Test Description")
 }
-
-def getShortCommitHash() {
-    return sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
-}
-
-def getChangeAuthorName() {
-    return sh(returnStdout: true, script: "git show -s --pretty=%an").trim()
-}
-
-def getChangeAuthorEmail() {
-    return sh(returnStdout: true, script: "git show -s --pretty=%ae").trim()
-}
-
-def getChangeSet() {
-    return sh(returnStdout: true, script: 'git diff-tree --no-commit-id --name-status -r HEAD').trim()
-}
-
-def getChangeLog() {
-    return sh(returnStdout: true, script: "git log --date=short --pretty=format:'%ad %aN <%ae> %n%n%x09* %s%d%n%b'").trim()
-}
-
-def getCurrentBranch () {
-    return sh (
-            script: 'git rev-parse --abbrev-ref HEAD',
-            returnStdout: true
-    ).trim()
-}
-
 def isPRMergeBuild() {
     return (env.BRANCH_NAME ==~ /^PR-\d+$/)
 }

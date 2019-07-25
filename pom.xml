@@ -13,6 +13,11 @@
 	
 	<repositories>
 		<repository>
+			<id>maven-central</id>
+			<name>Central Repository</name>
+      		<url>https://repo.maven.apache.org/maven2</url>
+		</repository>
+		<repository>
 			<id>jenkins-releases</id>
 			<name>Jenkins Releases</name>
 			<url>http://repo.jenkins-ci.org/releases</url>
