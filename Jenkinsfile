@@ -20,7 +20,7 @@ pipeline {
                 '''
             }
         }
-        stage ('SonarScan'){
+     /*   stage ('SonarScan'){
              steps {
                 bat ' mvn sonar:sonar \
                         -Dsonar.projectKey=mrumeshkumar_pipelinecode-unittest-shared-library \
@@ -28,7 +28,7 @@ pipeline {
                         -Dsonar.host.url=https://sonarcloud.io \
                         -Dsonar.login=33d4ddfc5d686070b7a872d5a737a20affb0060c'
              }
-        }
+        }*/
         
         stage('Build') { 
             steps { 
