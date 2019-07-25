@@ -14,7 +14,7 @@ pipeline {
         APP_NAME = 'jenkins-pipeline-demo-pwa'
         BUILD_NUMBER = "${env.BUILD_NUMBER}"
         IMAGE_VERSION="v_${BUILD_NUMBER}"
-        GIT_URL="git@github.mrumeshkumar.com:mpatel/${APP_NAME}.git"
+        GIT_URL="git@github.yourdomain.com:mpatel/${APP_NAME}.git"
         GIT_CRED_ID='izleka2IGSTDK+MiYOG3b3lZU9nYxhiJOrxhlaJ1gAA='
         REPOURL = 'cL5nSDa+49M.dkr.ecr.us-east-1.amazonaws.com'
         SBT_OPTS='-Xmx1024m -Xms512m'
@@ -42,46 +42,7 @@ pipeline {
         stage("Initialize") {
             steps {
                 script {
-                    
-                      // Notify to stakeholders
-                        def branchName = sh (script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
-                        def shortCommitHash = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
-                        def changeAuthorName = sh(returnStdout: true, script: "git show -s --pretty=%an").trim()
-                        def changeAuthorEmail = sh(returnStdout: true, script: "git show -s --pretty=%ae").trim()
-                        def changeSet = sh(returnStdout: true, script: 'git diff-tree --no-commit-id --name-status -r HEAD').trim()
-                        def changeLog = sh(returnStdout: true, script: "git log --date=short --pretty=format:'%ad %aN <%ae> %n%n%x09* %s%d%n%b'").trim()
-
-                        // Default values
-                        def colorName = 'RED'
-                        def colorCode = '#FF0000'
-                        def subject = "${buildStatus}: '${env.JOB_NAME} [${env.BUILD_NUMBER}]'" + branchName + ", " + shortCommitHash
-                        def summary = "Started: Name:: ${env.JOB_NAME} \n " +
-                                "Build Number: ${env.BUILD_NUMBER} \n " +
-                                "Build URL: ${env.BUILD_URL} \n " +
-                                "Short Commit Hash: " + shortCommitHash + " \n " +
-                                "Branch Name: " + branchName + " \n " +
-                                "Change Author: " + changeAuthorName + " \n " +
-                                "Change Author Email: " + changeAuthorEmail + " \n " +
-                                "Change Set: " + changeSet
-
-                        if (buildStatus == 'STARTED') {
-                            color = 'YELLOW'
-                            colorCode = '#FFFF00'
-                        } else if (buildStatus == 'SUCCESS') {
-                            color = 'GREEN'
-                            colorCode = '#00FF00'
-                        } else {
-                            color = 'RED'
-                            colorCode = '#FF0000'
-                        }
-
-                        // Send notifications
-                        hipchatSend(color: color, notify: true, message: summary, token: "${env.HIPCHAT_TOKEN}",
-                            failOnError: true, room: "${env.HIPCHAT_ROOM}", sendAs: 'Jenkins', textFormat: true)
-
-                        if (buildStatus == 'FAILURE') {
-                            emailext attachLog: true, body: summary, compressLog: true, recipientProviders: [brokenTestsSuspects(), brokenBuildSuspects(), culprits()], replyTo: 'noreply@yourdomain.com', subject: subject, to: 'mpatel@yourdomain.com'
-                        }
+                    notifyBuild('STARTED')
                     echo "${BUILD_NUMBER} - ${env.BUILD_ID} on ${env.JENKINS_URL}"
                     echo "Branch Specifier :: ${params.SPECIFIER}"
                     echo "Deploy to QA? :: ${params.DEPLOY_QA}"
@@ -121,8 +82,8 @@ pipeline {
          stage('Docker Tag & Push') {
              steps {
                  script {
-                     branchName = sh (script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
-                     shortCommitHash = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+                     branchName = getCurrentBranch()
+                     shortCommitHash = getShortCommitHash()
                      IMAGE_VERSION = "${BUILD_NUMBER}-" + branchName + "-" + shortCommitHash
                      sh 'eval $(aws ecr get-login --no-include-email --region us-east-1)'
                      sh "docker-compose build"
@@ -183,47 +144,7 @@ pipeline {
          */
         always {
             echo "I AM ALWAYS first"
-            script {
-               buildStatus = ${currentBuild.currentResult}
-                def branchName = sh (script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
-                def shortCommitHash = sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
-                def changeAuthorName = sh(returnStdout: true, script: "git show -s --pretty=%an").trim()
-                def changeAuthorEmail = sh(returnStdout: true, script: "git show -s --pretty=%ae").trim()
-                def changeSet = sh(returnStdout: true, script: 'git diff-tree --no-commit-id --name-status -r HEAD').trim()
-                def changeLog = sh(returnStdout: true, script: "git log --date=short --pretty=format:'%ad %aN <%ae> %n%n%x09* %s%d%n%b'").trim()
-
-                // Default values
-                def colorName = 'RED'
-                def colorCode = '#FF0000'
-                def subject = "${buildStatus}: '${env.JOB_NAME} [${env.BUILD_NUMBER}]'" + branchName + ", " + shortCommitHash
-                def summary = "Started: Name:: ${env.JOB_NAME} \n " +
-                        "Build Number: ${env.BUILD_NUMBER} \n " +
-                        "Build URL: ${env.BUILD_URL} \n " +
-                        "Short Commit Hash: " + shortCommitHash + " \n " +
-                        "Branch Name: " + branchName + " \n " +
-                        "Change Author: " + changeAuthorName + " \n " +
-                        "Change Author Email: " + changeAuthorEmail + " \n " +
-                        "Change Set: " + changeSet
-
-                if (buildStatus == 'STARTED') {
-                    color = 'YELLOW'
-                    colorCode = '#FFFF00'
-                } else if (buildStatus == 'SUCCESS') {
-                    color = 'GREEN'
-                    colorCode = '#00FF00'
-                } else {
-                    color = 'RED'
-                    colorCode = '#FF0000'
-                }
-
-                // Send notifications
-                hipchatSend(color: color, notify: true, message: summary, token: "${env.HIPCHAT_TOKEN}",
-                    failOnError: true, room: "${env.HIPCHAT_ROOM}", sendAs: 'Jenkins', textFormat: true)
-
-                if (buildStatus == 'FAILURE') {
-                    emailext attachLog: true, body: summary, compressLog: true, recipientProviders: [brokenTestsSuspects(), brokenBuildSuspects(), culprits()], replyTo: 'noreply@yourdomain.com', subject: subject, to: 'mpatel@yourdomain.com'
-                }
-            }
+            notifyBuild("${currentBuild.currentResult}")
         }
         aborted {
             echo "BUILD ABORTED"
@@ -246,9 +167,79 @@ def keepThisBuild() {
     currentBuild.setKeepLog(true)
     currentBuild.setDescription("Test Description")
 }
+
+def getShortCommitHash() {
+    return sh(returnStdout: true, script: "git log -n 1 --pretty=format:'%h'").trim()
+}
+
+def getChangeAuthorName() {
+    return sh(returnStdout: true, script: "git show -s --pretty=%an").trim()
+}
+
+def getChangeAuthorEmail() {
+    return sh(returnStdout: true, script: "git show -s --pretty=%ae").trim()
+}
+
+def getChangeSet() {
+    return sh(returnStdout: true, script: 'git diff-tree --no-commit-id --name-status -r HEAD').trim()
+}
+
+def getChangeLog() {
+    return sh(returnStdout: true, script: "git log --date=short --pretty=format:'%ad %aN <%ae> %n%n%x09* %s%d%n%b'").trim()
+}
+
+def getCurrentBranch () {
+    return sh (
+            script: 'git rev-parse --abbrev-ref HEAD',
+            returnStdout: true
+    ).trim()
+}
+
 def isPRMergeBuild() {
     return (env.BRANCH_NAME ==~ /^PR-\d+$/)
 }
 
+def notifyBuild(String buildStatus = 'STARTED') {
+    // build status of null means successful
+    buildStatus = buildStatus ?: 'SUCCESS'
 
+    def branchName = getCurrentBranch()
+    def shortCommitHash = getShortCommitHash()
+    def changeAuthorName = getChangeAuthorName()
+    def changeAuthorEmail = getChangeAuthorEmail()
+    def changeSet = getChangeSet()
+    def changeLog = getChangeLog()
+
+    // Default values
+    def colorName = 'RED'
+    def colorCode = '#FF0000'
+    def subject = "${buildStatus}: '${env.JOB_NAME} [${env.BUILD_NUMBER}]'" + branchName + ", " + shortCommitHash
+    def summary = "Started: Name:: ${env.JOB_NAME} \n " +
+            "Build Number: ${env.BUILD_NUMBER} \n " +
+            "Build URL: ${env.BUILD_URL} \n " +
+            "Short Commit Hash: " + shortCommitHash + " \n " +
+            "Branch Name: " + branchName + " \n " +
+            "Change Author: " + changeAuthorName + " \n " +
+            "Change Author Email: " + changeAuthorEmail + " \n " +
+            "Change Set: " + changeSet
+
+    if (buildStatus == 'STARTED') {
+        color = 'YELLOW'
+        colorCode = '#FFFF00'
+    } else if (buildStatus == 'SUCCESS') {
+        color = 'GREEN'
+        colorCode = '#00FF00'
+    } else {
+        color = 'RED'
+        colorCode = '#FF0000'
+    }
+
+    // Send notifications
+    hipchatSend(color: color, notify: true, message: summary, token: "${env.HIPCHAT_TOKEN}",
+        failOnError: true, room: "${env.HIPCHAT_ROOM}", sendAs: 'Jenkins', textFormat: true)
+
+    if (buildStatus == 'FAILURE') {
+        emailext attachLog: true, body: summary, compressLog: true, recipientProviders: [brokenTestsSuspects(), brokenBuildSuspects(), culprits()], replyTo: 'noreply@yourdomain.com', subject: subject, to: 'mpatel@yourdomain.com'
+    }
+}
 

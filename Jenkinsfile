@@ -30,13 +30,13 @@ pipeline {
             steps { 
                echo 'This is a minimal pipeline.' 
                // sh 'mvn -Dmaven.test.failure.ignore=true install'
-                bat 'mvn -B -DskipTests clean package'
+                sh 'mvn -B -DskipTests clean package'
             }
         }
         stage('Test') {
             steps {
                  echo 'mvn test' 
-                 bat 'mvn test'
+                 sh 'mvn test'
             }
             post {
                 always {
