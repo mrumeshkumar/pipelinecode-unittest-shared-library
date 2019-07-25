@@ -8,11 +8,19 @@ pipeline {
         skipStagesAfterUnstable()
     }
     stages { 
+        
+        stage ('SonarScan'){
+           sh' mvn sonar:sonar \
+                -Dsonar.projectKey=mrumeshkumar_pipelinecode-unittest-shared-library \
+                -Dsonar.organization=mrumeshkumar-github \
+                -Dsonar.host.url=https://sonarcloud.io \
+                -Dsonar.login=bed657b793f86eec907ea8d6b9014e66d35f53f3'
+        }
         stage ('Initialize') {
             steps {
                 sh '''
                     echo "PATH = ${PATH}"
-                    echo "M2_HOME = ${M2_HOME}"
+                    echo "M2_HOME = ${MAVIN_HOME}"
                 '''
             }
         }
