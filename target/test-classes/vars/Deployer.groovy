@@ -11,4 +11,9 @@ def call( _env ) {
 			sh( "ssh deployer@app-prod -c '${SharedLibraryConstants.DEPLOY_COMMAND}'" )
 		}
 	}
+	else if( _env == "production" ) {
+		sshagent(["prod-ssh"]) {
+			sh( "ssh deployer@app-prod -c '${SharedLibraryConstants.DEPLOY_COMMAND}'" )
+		}
+	}
 }
