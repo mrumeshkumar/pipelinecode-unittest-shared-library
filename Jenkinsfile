@@ -36,7 +36,7 @@ pipeline {
         stage('Test') {
             steps {
                  echo 'mvn test' 
-                bat 'mvn test'
+                 bat 'mvn test'
             }
             post {
                 always {
@@ -79,9 +79,9 @@ pipeline {
     }
     post {
     failure {
-        mail to: 'mrumeshkumar@hotmail.com',
-             subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
-             body: "Something is wrong with ${env.BUILD_URL}"
+    //    mail to: 'mrumeshkumar@hotmail.com',
+      //       subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
+      //       body: "Something is wrong with ${env.BUILD_URL}"
     }
 }
 }
