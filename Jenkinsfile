@@ -23,10 +23,10 @@ pipeline {
         stage ('SonarScan'){
              steps {
                 bat ' mvn sonar:sonar \
-                        -Dsonar.projectKey=mrumebatkumar_pipelinecode-unittest-batared-library \
-                        -Dsonar.organization=mrumebatkumar-github \
+                        -Dsonar.projectKey=mrumeshkumar_pipelinecode-unittest-shared-library \
+                        -Dsonar.organization=mrumeshkumar-github \
                         -Dsonar.host.url=https://sonarcloud.io \
-                        -Dsonar.login=bed657b793f86eec907ea8d6b9014e66d35f53f3'
+                        -Dsonar.login=33d4ddfc5d686070b7a872d5a737a20affb0060c'
              }
         }
         
