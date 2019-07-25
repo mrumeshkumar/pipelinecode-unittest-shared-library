@@ -12,7 +12,7 @@ pipeline {
     stages { 
         stage ('Initialize') {
             steps {
-                bat '''
+                sh '''
                     echo "PATH = ${PATH}"
                     echo "M2_HOME = ${M2_HOME}"
                 '''
@@ -20,7 +20,7 @@ pipeline {
         }
         stage ('SonarScan'){
              steps {
-                bat' mvn sonar:sonar \
+                sh' mvn sonar:sonar \
                         -Dsonar.projectKey=mrumeshkumar_pipelinecode-unittest-shared-library \
                         -Dsonar.organization=mrumeshkumar-github \
                         -Dsonar.host.url=https://sonarcloud.io \
