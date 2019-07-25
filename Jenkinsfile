@@ -1,6 +1,6 @@
 pipeline { 
     agent {
-        docker { image 'java:8-alpine' }
+        docker { image 'zenika/alpine-maven' }
     } 
  //   tools { 
    //     maven 'Maven 3.6.0' 

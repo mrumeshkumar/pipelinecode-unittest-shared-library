@@ -28,12 +28,12 @@ def call( Map _args ) {
 		}
 	
 		stage( "Deploy to TEST" ) {
-			Deployer( "test" )
+			DeployerSample( "test" )
 		}
 	
 		if( BRANCH_NAME == "master" ) {
 			stage( "Deploy to PRODUCTION" ) {
-				Deployer( "production" )
+				DeployerSample( "production" )
 			}
 		}
 	}
