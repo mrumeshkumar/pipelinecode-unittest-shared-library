@@ -8,40 +8,40 @@ pipeline {
         skipStagesAfterUnstable()
     }
     stages { 
-        
+        stage ('Initialize') {
+            steps {
+                bat '''
+                    echo "PATH = ${PATH}"
+                    echo "M2_HOME = ${MAVIN_HOME}"
+                '''
+            }
+        }
         stage ('SonarScan'){
              steps {
-                sh' mvn sonar:sonar \
+                bat' mvn sonar:sonar \
                         -Dsonar.projectKey=mrumeshkumar_pipelinecode-unittest-shared-library \
                         -Dsonar.organization=mrumeshkumar-github \
                         -Dsonar.host.url=https://sonarcloud.io \
                         -Dsonar.login=bed657b793f86eec907ea8d6b9014e66d35f53f3'
              }
         }
-        stage ('Initialize') {
-            steps {
-                sh '''
-                    echo "PATH = ${PATH}"
-                    echo "M2_HOME = ${MAVIN_HOME}"
-                '''
-            }
-        }
+        
         stage('Build') { 
             steps { 
                echo 'This is a minimal pipeline.' 
                // sh 'mvn -Dmaven.test.failure.ignore=true install'
-                sh 'mvn -B -DskipTests clean package'
+                bat 'mvn -B -DskipTests clean package'
             }
         }
         stage('Test') {
             steps {
                  echo 'mvn test' 
-                sh 'mvn test'
+                bat 'mvn test'
             }
             post {
                 always {
                       echo 'mvn test Post' 
-                    junit 'target/surefire-reports/*.xml'
+                      junit 'target/surefire-reports/*.xml'
                 }
             }
         }
