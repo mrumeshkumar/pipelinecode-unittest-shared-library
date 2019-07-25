@@ -1,9 +1,11 @@
 pipeline { 
-    agent any  
-    tools { 
-        maven 'Maven 3.6.0' 
-        jdk 'jdk8' 
-    }
+    agent {
+        docker { image 'node:7-alpine' }
+    } 
+ //   tools { 
+   //     maven 'Maven 3.6.0' 
+    //    jdk 'jdk8' 
+   // }
     options {
         skipStagesAfterUnstable()
     }
@@ -12,7 +14,7 @@ pipeline {
             steps {
                 bat '''
                     echo "PATH = ${PATH}"
-                    echo "M2_HOME = ${MAVIN_HOME}"
+                    echo "M2_HOME = ${M2_HOME}"
                 '''
             }
         }
