@@ -82,6 +82,8 @@ pipeline {
     //    mail to: 'mrumeshkumar@hotmail.com',
       //       subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
       //       body: "Something is wrong with ${env.BUILD_URL}"
+
+       echo  "Failed Pipeline: ${currentBuild.fullDisplayName}"
     }
 }
 }
