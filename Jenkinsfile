@@ -22,7 +22,7 @@ pipeline {
         }
         stage ('SonarScan'){
              steps {
-                bat' mvn sonar:sonar \
+                bat ' mvn sonar:sonar \
                         -Dsonar.projectKey=mrumebatkumar_pipelinecode-unittest-batared-library \
                         -Dsonar.organization=mrumebatkumar-github \
                         -Dsonar.host.url=https://sonarcloud.io \
