@@ -43,7 +43,7 @@ pipeline {
                 always {
                       echo 'mvn test Post' 
                      // junit 'target/surefire-reports/*.xml'
-                      junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
+                   //   junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
                 }
             }
         }
