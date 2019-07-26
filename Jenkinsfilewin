@@ -42,23 +42,11 @@ pipeline {
             post {
                 always {
                       echo 'mvn test Post' 
-                      junit 'target/surefire-reports/*.xml'
+                     // junit 'target/surefire-reports/*.xml'
+                      junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
                 }
             }
         }
-        stage('Deliver') {
-            steps {
-                  echo 'mvn Deliver build output' 
-              //  bat './jenkins/scripts/deliver.bat'
-            }
-            post {
-                always {
-                    archiveArtifacts artifacts: '**/*.jar', fingerprint: true
-                    junit 'target/surefire-reports/*.xml'
-                       }
-            }
-        }
-      
     }
     post {
     failure {
