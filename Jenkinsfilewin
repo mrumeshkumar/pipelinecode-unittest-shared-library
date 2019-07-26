@@ -1,7 +1,4 @@
 pipeline { 
- //   agent {
- //       docker { image 'zenika/alpine-maven' }
-  //  } 
    agent any
 
     tools { 
@@ -61,25 +58,7 @@ pipeline {
                        }
             }
         }
-        stage('Deploy - Staging') {
-            steps {
-                   // bat './deploy staging'
-                  //  bat './run-smoke-tests'
-                    echo './deploy staging'
-                    echo './run-smoke-tests'
-                }
-        }
-        stage('Sanity check') {
-            steps {
-                input "Does the staging environment look ok?"
-            }
-        }
-        stage('Deploy - Production') {
-            steps {
-                echo  './deploy production'
-               // bat './deploy production'
-            }
-        }
+      
     }
     post {
     failure {
